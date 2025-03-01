@@ -7,7 +7,7 @@
       "start": "node demo_app.js"
     },
     "dependencies": {
-      "axios": "^0.21.1"
+      "ollama": "latest" 
     },
     "author": "",
     "license": "ISC"
