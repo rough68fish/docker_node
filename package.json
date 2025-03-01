@@ -1,0 +1,14 @@
+{
+    "name": "demo_app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "demo_app.js",
+    "scripts": {
+      "start": "node demo_app.js"
+    },
+    "dependencies": {
+      "axios": "^0.21.1"
+    },
+    "author": "",
+    "license": "ISC"
+  }
