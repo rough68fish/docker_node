@@ -58,6 +58,11 @@ app.get('/', (req: Request, res: Response) => {
         function showLoading() {
           document.getElementById('loading').style.display = 'block';
         }
+        function scrollToBottom() {
+          const chatContainer = document.getElementById('chat-container');
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        window.onload = scrollToBottom;
       </script>
     </body>
     </html>
@@ -109,6 +114,11 @@ app.post('/ask', async (req: Request, res: Response) => {
           function showLoading() {
             document.getElementById('loading').style.display = 'block';
           }
+          function scrollToBottom() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+          }
+          window.onload = scrollToBottom;
         </script>
       </body>
       </html>
