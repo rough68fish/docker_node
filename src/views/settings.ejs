@@ -8,13 +8,33 @@
 </head>
 <body>
   <div class="title-bar">Settings</div>
-  <form action="/settings" method="post">
-    <label for="style">Select Style:</label>
-    <select id="style" name="style">
-      <option value="/styles.css" <%= lightSelected %>>Light</option>
-      <option value="/styles-dark.css" <%= darkSelected %>>Dark</option>
-    </select>
-    <button type="submit">Save</button>
-  </form>
+  <div class="sidebar-container">
+    <div class="sidebar">
+      <a href="#style-settings">Style</a>
+      <a href="#model-settings">Model</a>
+    </div>
+    <div class="content">
+      <form action="/settings" method="post">
+        <div id="style-settings">
+          <h2>Style Settings</h2>
+          <label for="style">Select Style:</label>
+          <select id="style" name="style">
+            <option value="/styles.css" <%= lightSelected %>>Light</option>
+            <option value="/styles-dark.css" <%= darkSelected %>>Dark</option>
+          </select>
+        </div>
+        <div id="model-settings">
+          <h2>Model Settings</h2>
+          <label for="model">Select Model:</label>
+          <select id="model" name="model">
+            <% modelOptions.forEach(model => { %>
+              <option value="<%= model.name %>"<%= model.selected %>><%= model.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

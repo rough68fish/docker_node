@@ -68,6 +68,33 @@ body {
     background-color: #45a049;
   }
   
+  .sidebar-container {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 200px;
+    background-color: #333;
+    padding: 10px;
+  }
+  
+  .sidebar a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #fff;
+  }
+  
+  .sidebar a:hover {
+    background-color: #555;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+    color: #fff;
+  }
+
   #loading {
     display: none;
     text-align: center;

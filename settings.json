@@ -1,6 +1,6 @@
 {
     "ollamaHost": "http://host.docker.internal:11434",
-    "model": "nous-hermes2",
+    "model": "nous-hermes2:latest",
     "styleOptions": [
         {
             "name": "Light",

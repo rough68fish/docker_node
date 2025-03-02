@@ -48,16 +48,35 @@ export const postClear = (req: Request, res: Response) => {
   res.redirect('/');
 };
 
-export const getSettings = (req: Request, res: Response) => {
+const getModelOptions = (ollamaResponse: any, settings: any) => {
+  return ollamaResponse.models.map((model: any) => ({
+    name: model.name,
+    selected: model.name === settings.model ? 'selected' : ''
+  }));
+};
+
+export const getSettings = async (req: Request, res: Response) => {
   const lightSelected = settings.stylePath === '/styles.css' ? 'selected' : '';
   const darkSelected = settings.stylePath === '/styles-dark.css' ? 'selected' : '';
 
-  res.render('settings', { lightSelected, darkSelected, stylePath: settings.stylePath });
+  try {
+    const ollama = new Ollama({ host: settings.ollamaHost });
+    const response = await ollama.list();
+    const modelOptions = getModelOptions(response, settings); 
+    res.render('settings', { lightSelected, darkSelected, stylePath: settings.stylePath, modelOptions });
+  } catch (error) {
+    res.send(`
+      <p>Error retrieving models from Ollama: ${error}</p>
+      <a href="/">Go back</a>
+    `);
+  }
 };
 
 export const postSettings = (req: Request, res: Response) => {
   const newStylePath = req.body.style;
+  const newModel = req.body.model;
   settings.stylePath = newStylePath;
+  settings.model = newModel;
   fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
   res.redirect('/');
 };
