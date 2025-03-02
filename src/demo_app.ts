@@ -45,7 +45,10 @@ app.get('/', (req: Request, res: Response) => {
       <link rel="stylesheet" href="${settings.stylePath}">
     </head>
     <body>
-      <div class="title-bar">DON Chat</div>
+      <div class="title-bar">
+        DON Chat
+        <a href="/settings" class="settings-icon">&#9881;</a>
+      </div>
       <div class="chat-container" id="chat-container">
         ${chatHtml}
       </div>
@@ -72,6 +75,41 @@ app.get('/', (req: Request, res: Response) => {
     </body>
     </html>
   `);
+});
+
+app.get('/settings', (req: Request, res: Response) => {
+  const lightSelected = settings.stylePath === '/styles.css' ? 'selected' : '';
+  const darkSelected = settings.stylePath === '/styles-dark.css' ? 'selected' : '';
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Settings</title>
+      <link rel="stylesheet" href="${settings.stylePath}">
+    </head>
+    <body>
+      <div class="title-bar">Settings</div>
+      <form action="/settings" method="post">
+        <label for="style">Select Style:</label>
+        <select id="style" name="style">
+          <option value="/styles.css" ${lightSelected}>Light</option>
+          <option value="/styles-dark.css" ${darkSelected}>Dark</option>
+        </select>
+        <button type="submit">Save</button>
+      </form>
+    </body>
+    </html>
+  `);
+});
+
+app.post('/settings', (req: Request, res: Response) => {
+  const newStylePath = req.body.style;
+  settings.stylePath = newStylePath;
+  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+  res.redirect('/');
 });
 
 app.post('/ask', async (req: Request, res: Response) => {
@@ -101,7 +139,10 @@ app.post('/ask', async (req: Request, res: Response) => {
         <link rel="stylesheet" href="${settings.stylePath}">
       </head>
       <body>
-        <div class="title-bar">DON Chat</div>
+        <div class="title-bar">
+          DON Chat
+          <a href="/settings" class="settings-icon">&#9881;</a>
+        </div>
         <div class="chat-container" id="chat-container">
           ${chatHtml}
         </div>
