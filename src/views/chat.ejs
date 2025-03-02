@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DON Chat</title>
+  <link rel="stylesheet" href="<%= stylePath %>">
+</head>
+<body>
+  <div class="title-bar">
+    DON Chat
+    <a href="/settings" class="settings-icon">&#9881;</a>
+  </div>
+  <div class="chat-container" id="chat-container">
+    <%- chatHtml %>
+  </div>
+  <div class="input-container">
+    <form action="/ask" method="post" onsubmit="showLoading()">
+      <input type="text" id="question" name="question" placeholder="Type your question here...">
+      <button type="submit">Ask</button>
+    </form>
+    <form action="/clear" method="post" style="margin-left: 10px;">
+      <button type="submit">Clear Chat</button>
+    </form>
+  </div>
+  <div id="loading">⏳ Loading...</div>
+  <script>
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+    }
+    function scrollToBottom() {
+      const chatContainer = document.getElementById('chat-container');
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    window.onload = scrollToBottom;
+  </script>
+</body>
+</html>
