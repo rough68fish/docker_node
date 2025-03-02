@@ -40,6 +40,9 @@ app.get('/', (req, res) => {
           <input type="text" id="question" name="question" placeholder="Type your question here...">
           <button type="submit">Ask</button>
         </form>
+        <form action="/clear" method="post" style="margin-left: 10px;">
+          <button type="submit">Clear Chat</button>
+        </form>
       </div>
       <div id="loading">⏳ Loading...</div>
       <script>
@@ -88,6 +91,9 @@ app.post('/ask', async (req, res) => {
             <input type="text" id="question" name="question" placeholder="Type your question here...">
             <button type="submit">Ask</button>
           </form>
+          <form action="/clear" method="post" style="margin-left: 10px;">
+            <button type="submit">Clear Chat</button>
+          </form>
         </div>
         <div id="loading">⏳ Loading...</div>
         <script>
@@ -104,6 +110,11 @@ app.post('/ask', async (req, res) => {
       <a href="/">Try again</a>
     `);
   }
+});
+
+app.post('/clear', (req, res) => {
+  chatHistory = [];
+  res.redirect('/');
 });
 
 app.listen(port, () => {
