@@ -4,10 +4,41 @@ This project demonstrates how to set up a Node.js application using Docker. It i
 
 ## Prerequisites
 
+- Ollama installed
+  - model nous-hermes2 installed
 - Docker installed on your machine
 - Node installed on your machine
   - working npm
 - Basic knowledge of Node.js and Docker
+
+### Installing Ollama and nous-hermes2
+
+Note: currently only works with Ollama. If you have a model installed that isn't nous-hermes2 the app will work but you will need to go to the settings page and select an installed model from the list before starting to chat.
+
+- Download and install Ollama [https://ollama.com/](https://ollama.com/)
+
+after its installed run the nous-hemes2 model:
+
+```
+C:\Users\nunya>ollama run nous-hermes2
+pulling manifest
+pulling 416e45a35835... 100% ▕████████████████████████████████████████████████████████▏ 6.1 GB
+pulling c71d239df917... 100% ▕████████████████████████████████████████████████████████▏  11 KB
+pulling a47b02e00552... 100% ▕████████████████████████████████████████████████████████▏  106 B
+pulling 1691af48af21... 100% ▕████████████████████████████████████████████████████████▏  261 B
+pulling f02dd72bb242... 100% ▕████████████████████████████████████████████████████████▏   59 B
+pulling 4f5cf7e1adf4... 100% ▕████████████████████████████████████████████████████████▏  558 B
+verifying sha256 digest
+writing manifest
+success
+>>> do you know node
+Yes, I am familiar with Node.js. It's a JavaScript runtime environment that executes JavaScript code on a server.
+It is designed for building scalable network applications, such as web servers or real-time applications using its
+Event-driven architecture and non-blocking input/output (I/O) model.
+
+Would you like more information on how to use Node.js or any specific Node.js-based application?
+
+```
 
 ## Project Structure
 
