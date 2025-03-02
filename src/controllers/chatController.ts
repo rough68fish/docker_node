@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import { SessionData } from 'express-session';
+import { Settings } from '../models/settings';
 
 // Extend the express-session module to include custom properties in the session data
 declare module 'express-session' {
   interface SessionData {
     chatHistory?: ChatEntry[];
     sessionId?: string;
+    settings?: Settings;
   }
 }
 
@@ -15,9 +17,9 @@ import path from 'path';
 import { Ollama } from 'ollama';
 import { v4 as uuidv4 } from 'uuid';
 
-// Load settings from the settings.json file
+// Load default settings from the settings.json file
 const settingsPath = path.join(__dirname, '../../settings.json');
-const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+const defaultSettings: Settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
 // Handler to render the chat page with the current chat history
 export const getChat = (req: Request, res: Response) => {
@@ -26,7 +28,7 @@ export const getChat = (req: Request, res: Response) => {
     <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
   `).join('');
 
-  res.render('chat', { chatHtml, stylePath: settings.stylePath });
+  res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
 };
 
 // Handler to process a new question from the user and get a response from Ollama
@@ -40,9 +42,9 @@ export const postAsk = async (req: Request, res: Response) => {
   }
 
   try {
-    const ollama = new Ollama({ host: settings.ollamaHost });
+    const ollama = new Ollama({ host: defaultSettings.ollamaHost });
     const response = await ollama.chat({
-      model: settings.model,
+      model: req.session.settings?.model || defaultSettings.model,
       messages: req.session.chatHistory,
     });
     const answer = response.message.content;
@@ -62,12 +64,12 @@ export const postAsk = async (req: Request, res: Response) => {
     const logFilePath = path.join(logDir, logFileName);
     const logData = {
       sessionId: req.session.sessionId,
-      model: settings.model,
+      model: req.session.settings?.model || defaultSettings.model,
       chatHistory: req.session.chatHistory,
     };
     fs.writeFileSync(logFilePath, JSON.stringify(logData, null, 2));
 
-    res.render('chat', { chatHtml, stylePath: settings.stylePath });
+    res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
   } catch (error) {
     res.send(`
       <p>Error communicating with Ollama: ${error}</p>
@@ -93,14 +95,16 @@ const getModelOptions = (ollamaResponse: any, settings: any) => {
 
 // Handler to render the settings page with the current settings
 export const getSettings = async (req: Request, res: Response) => {
-  const lightSelected = settings.stylePath === '/styles.css' ? 'selected' : '';
-  const darkSelected = settings.stylePath === '/styles-dark.css' ? 'selected' : '';
+  const stylePath = req.session.settings?.stylePath || defaultSettings.stylePath;
+  const model = req.session.settings?.model || defaultSettings.model;
+  const lightSelected = stylePath === '/styles.css' ? 'selected' : '';
+  const darkSelected = stylePath === '/styles-dark.css' ? 'selected' : '';
 
   try {
-    const ollama = new Ollama({ host: settings.ollamaHost });
+    const ollama = new Ollama({ host: defaultSettings.ollamaHost });
     const response = await ollama.list();
-    const modelOptions = getModelOptions(response, settings); 
-    res.render('settings', { lightSelected, darkSelected, stylePath: settings.stylePath, modelOptions });
+    const modelOptions = getModelOptions(response, { model }); 
+    res.render('settings', { lightSelected, darkSelected, stylePath, modelOptions });
   } catch (error) {
     res.send(`
       <p>Error retrieving models from Ollama: ${error}</p>
@@ -111,10 +115,8 @@ export const getSettings = async (req: Request, res: Response) => {
 
 // Handler to update the settings based on user input
 export const postSettings = (req: Request, res: Response) => {
-  const newStylePath = req.body.style;
-  const newModel = req.body.model;
-  settings.stylePath = newStylePath;
-  settings.model = newModel;
-  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+  req.session.settings = req.session.settings || { ...defaultSettings };
+  req.session.settings.stylePath = req.body.style;
+  req.session.settings.model = req.body.model;
   res.redirect('/');
 };
