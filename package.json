@@ -1,15 +1,21 @@
 {
     "name": "demo_app",
-    "version": "1.0.0",
+    "version": "0.5.0",
     "description": "",
-    "main": "demo_app.js",
+    "main": "dist/demo_app.js",
     "scripts": {
-      "start": "node demo_app.js"
+        "start": "node dist/demo_app.js"
     },
     "dependencies": {
-      "ollama": "latest", 
-      "express": "latest"
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0",
+    "ollama": "latest",
+    "@types/express": "^4.17.13",
+    "@types/node": "^14.14.41"
     },
-    "author": "",
+    "devDependencies": {
+    "typescript": "^4.2.4"
+    },
+    "author": "Sean Sell sksell@gmail.com",
     "license": "ISC"
-  }
+}

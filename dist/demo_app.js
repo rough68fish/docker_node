@@ -1,27 +1,30 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { Ollama } from 'ollama';
 import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 const app = express();
 const port = 8080;
-
 let chatHistory = [];
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.get('/', (req, res) => {
-  const chatHtml = chatHistory.map(entry => `
+    const chatHtml = chatHistory.map(entry => `
     <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
   `).join('');
-
-  res.send(`
+    res.send(`
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -54,25 +57,21 @@ app.get('/', (req, res) => {
     </html>
   `);
 });
-
-app.post('/ask', async (req, res) => {
-  const question = req.body.question;
-  chatHistory.push({ role: 'user', content: question });
-
-  try {
-    const ollama = new Ollama({ host: 'http://host.docker.internal:11434' });
-    const response = await ollama.chat({
-      model: 'nous-hermes2',
-      messages: chatHistory,
-    });
-    const answer = response.message.content;
-    chatHistory.push({ role: 'assistant', content: answer });
-
-    const chatHtml = chatHistory.map(entry => `
+app.post('/ask', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const question = req.body.question;
+    chatHistory.push({ role: 'user', content: question });
+    try {
+        const ollama = new Ollama({ host: 'http://host.docker.internal:11434' });
+        const response = yield ollama.chat({
+            model: 'nous-hermes2',
+            messages: chatHistory,
+        });
+        const answer = response.message.content;
+        chatHistory.push({ role: 'assistant', content: answer });
+        const chatHtml = chatHistory.map(entry => `
       <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
     `).join('');
-
-    res.send(`
+        res.send(`
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -104,19 +103,18 @@ app.post('/ask', async (req, res) => {
       </body>
       </html>
     `);
-  } catch (error) {
-    res.send(`
+    }
+    catch (error) {
+        res.send(`
       <p>Error communicating with Ollama: ${error}</p>
       <a href="/">Try again</a>
     `);
-  }
-});
-
+    }
+}));
 app.post('/clear', (req, res) => {
-  chatHistory = [];
-  res.redirect('/');
+    chatHistory = [];
+    res.redirect('/');
 });
-
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });

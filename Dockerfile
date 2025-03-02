@@ -5,9 +5,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 # Bundle app source
-COPY demo_app.js ./
-COPY public ./public
+COPY tsconfig.json ./
+COPY src ./src
+COPY public ./dist/public
+# Build app
+RUN npx tsc
 # Expose port
 EXPOSE 8080
 # Run the app
-CMD ["node", "demo_app.js"]
+CMD ["node", "dist/demo_app.js"]
