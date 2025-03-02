@@ -7,14 +7,15 @@
         "start": "node dist/demo_app.js"
     },
     "dependencies": {
-    "express": "^4.17.1",
-    "body-parser": "^1.19.0",
-    "ollama": "latest",
-    "@types/express": "^4.17.13",
-    "@types/node": "^14.14.41"
+        "@types/express": "^4.17.13",
+        "@types/node": "^14.14.41",
+        "body-parser": "^1.19.0",
+        "ejs": "^3.1.10",
+        "express": "^4.17.1",
+        "ollama": "latest"
     },
     "devDependencies": {
-    "typescript": "^4.2.4"
+        "typescript": "^4.2.4"
     },
     "author": "Sean Sell sksell@gmail.com",
     "license": "ISC"

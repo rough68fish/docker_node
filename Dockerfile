@@ -8,10 +8,12 @@ RUN npm install
 COPY tsconfig.json ./
 COPY src ./src
 COPY public ./dist/public
+# COPY views since they are not compiled by tsc
+COPY src/views ./dist/views
 COPY settings.json ./settings.json
 # Build app
 RUN npx tsc
 # Expose port
 EXPOSE 8080
 # Run the app
-CMD ["node", "dist/demo_app.js"]
+CMD ["node", "dist/app.js"]
