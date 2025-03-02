@@ -1,4 +1,4 @@
-# Docker Node Project
+# Docker Ollama Node (DON) Project
 
 This project demonstrates how to set up a Node.js application using Docker. It includes instructions for building and running the application in a Docker container. The sample application is a basic chat interface that connects to an Ollama model running locally on the host machine.
 
@@ -13,16 +13,27 @@ This project demonstrates how to set up a Node.js application using Docker. It i
 
 ```
 docker_node/
-├── dist
 ├── node_modules (excluded via .gitignore)
-├── public
+├── public/
+│   ├── styles-dark.css
+│   └── styles.css
 ├── src/
-│   └── demo_app.ts
+│   ├── app.ts
+│   ├── controllers/
+│   │   └── chatController.ts
+│   ├── models/
+│   │   └── chatEntry.ts
+│   ├── routes/
+│   │   └── index.ts
+│   └── views/
+│       ├── chat.ejs
+│       └── settings.ejs
 ├── .gitignore
 ├── Dockerfile
 ├── package-lock.json
 ├── package.json
 ├── README.md
+├── settings.json
 └── tsconfig.json
 ```
 
@@ -99,7 +110,28 @@ npm-debug.log
 
 ## Application Code
 
-The main application code is located in the `src` directory. The `demo_app.ts` file contains a simple Node.js server. This server renders a chat interface to an Ollama model running locally.
+The main application code is located in the `src` directory. The project follows the Model-View-Controller (MVC) architecture, which separates the application into three main components:
+
+1. **Model**: Represents the data and business logic of the application. In this project, the `ChatEntry` interface in [`src/models/chatEntry.ts`](src/models/chatEntry.ts) defines the structure of a chat entry.
+
+2. **View**: Represents the presentation layer of the application. The views are EJS templates located in the [`src/views`](src/views) directory. The main views are:
+   - [`chat.ejs`](src/views/chat.ejs): Renders the chat interface.
+   - [`settings.ejs`](src/views/settings.ejs): Renders the settings page where users can select the chat model and style.
+
+3. **Controller**: Handles the user input and updates the model and view accordingly. The main controller is [`chatController.ts`](src/controllers/chatController.ts), which includes the following methods:
+   - `getChat`: Renders the chat interface with the current chat history.
+   - `postAsk`: Handles the user's question, sends it to the Ollama model, and updates the chat history with the response.
+   - `postClear`: Clears the chat history.
+   - `getSettings`: Renders the settings page with the current style and model options.
+   - `postSettings`: Updates the settings based on the user's selection.
+
+### Features
+
+- **Model Selection**: Users can select the chat model from the settings page. The available models are retrieved from the Ollama API and displayed in a dropdown menu. The selected model is saved in the `settings.json` file and used for subsequent chat interactions.
+
+- **Styles**: Users can select the style (light or dark) from the settings page. The selected style is applied to the chat interface and saved in the `settings.json` file. The styles are defined in the CSS files located in the [`public`](public) directory:
+  - [`styles.css`](public/styles.css): Light theme.
+  - [`styles-dark.css`](public/styles-dark.css): Dark theme.
 
 ## References and Aknowledgements 
 
