@@ -3,6 +3,7 @@ import { ChatEntry } from '../models/chatEntry';
 import fs from 'fs';
 import path from 'path';
 import { Ollama } from 'ollama';
+import { v4 as uuidv4 } from 'uuid';
 
 const settingsPath = path.join(__dirname, '../../settings.json');
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
@@ -33,6 +34,16 @@ export const postAsk = async (req: Request, res: Response) => {
     const chatHtml = chatHistory.map(entry => `
       <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
     `).join('');
+
+    // Log chat history to JSON file
+    const logDir = path.join(__dirname, '../../ext_logs');
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir);
+    }
+    const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 14);
+    const logFileName = `${uuidv4()}_${timestamp}.json`;
+    const logFilePath = path.join(logDir, logFileName);
+    fs.writeFileSync(logFilePath, JSON.stringify(chatHistory, null, 2));
 
     res.render('chat', { chatHtml, stylePath: settings.stylePath });
   } catch (error) {

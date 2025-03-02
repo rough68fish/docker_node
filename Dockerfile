@@ -11,6 +11,8 @@ COPY public ./dist/public
 # COPY views since they are not compiled by tsc
 COPY src/views ./dist/views
 COPY settings.json ./settings.json
+# Create logs directory
+RUN mkdir -p /app/ext_logs
 # Build app
 RUN npx tsc
 # Clean up

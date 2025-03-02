@@ -12,7 +12,8 @@
         "body-parser": "^1.19.0",
         "ejs": "^3.1.10",
         "express": "^4.17.1",
-        "ollama": "latest"
+        "ollama": "latest",
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "typescript": "^4.2.4"
