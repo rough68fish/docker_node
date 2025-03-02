@@ -11,10 +11,16 @@ const __dirname = dirname(__filename);
 const app = express();
 const port = 8080;
 
+let chatHistory = [];
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
+  const chatHtml = chatHistory.map(entry => `
+    <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
+  `).join('');
+
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -27,7 +33,7 @@ app.get('/', (req, res) => {
     <body>
       <div class="title-bar">DON Chat</div>
       <div class="chat-container" id="chat-container">
-        <!-- Chat messages will be appended here -->
+        ${chatHtml}
       </div>
       <div class="input-container">
         <form action="/ask" method="post" onsubmit="showLoading()">
@@ -48,14 +54,21 @@ app.get('/', (req, res) => {
 
 app.post('/ask', async (req, res) => {
   const question = req.body.question;
+  chatHistory.push({ role: 'user', content: question });
 
   try {
     const ollama = new Ollama({ host: 'http://host.docker.internal:11434' });
     const response = await ollama.chat({
       model: 'nous-hermes2',
-      messages: [{ role: 'user', content: question }],
+      messages: chatHistory,
     });
     const answer = response.message.content;
+    chatHistory.push({ role: 'assistant', content: answer });
+
+    const chatHtml = chatHistory.map(entry => `
+      <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
+    `).join('');
+
     res.send(`
       <!DOCTYPE html>
       <html lang="en">
@@ -68,8 +81,7 @@ app.post('/ask', async (req, res) => {
       <body>
         <div class="title-bar">DON Chat</div>
         <div class="chat-container" id="chat-container">
-          <p><strong>You:</strong> ${question}</p>
-          <p><strong>DON:</strong> ${answer}</p>
+          ${chatHtml}
         </div>
         <div class="input-container">
           <form action="/ask" method="post" onsubmit="showLoading()">
