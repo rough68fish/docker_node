@@ -34,6 +34,13 @@ body {
   overflow-y: auto;
 }
 
+/*
+  
+  Setup the input container so the input and buttons are aligned and
+  the input box takes up the remaining space.
+  
+*/
+
 .input-container {
   display: flex;
   align-items: center;
@@ -55,6 +62,7 @@ body {
   margin-right: 10px;
 }
 
+/*
 .input-container input[type="text"] {
   flex: 1;
   padding: 10px;
@@ -62,6 +70,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+*/
 
 .input-container button {
   padding: 10px 20px;

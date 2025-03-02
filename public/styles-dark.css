@@ -37,6 +37,12 @@ body {
     background-color: #1e1e1e;
   }
   
+  /*
+  
+  Setup the input container so the input and buttons are aligned and
+  the input box takes up the remaining space.
+  
+  */
   .input-container {
     display: flex;
     align-items: center;
@@ -60,6 +66,7 @@ body {
     color: #fff;
   }
   
+  /*
   .input-container input[type="text"] {
     flex: 1;
     padding: 10px;
@@ -69,6 +76,7 @@ body {
     background-color: #333333;
     color: #ffffff;
   }
+  */
   
   .input-container button {
     padding: 10px 20px;
