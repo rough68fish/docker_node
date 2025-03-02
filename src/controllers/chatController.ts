@@ -1,37 +1,54 @@
 import { Request, Response } from 'express';
+import { SessionData } from 'express-session';
+
+// Extend the express-session module to include custom properties in the session data
+declare module 'express-session' {
+  interface SessionData {
+    chatHistory?: ChatEntry[];
+    sessionId?: string;
+  }
+}
+
 import { ChatEntry } from '../models/chatEntry';
 import fs from 'fs';
 import path from 'path';
 import { Ollama } from 'ollama';
 import { v4 as uuidv4 } from 'uuid';
 
+// Load settings from the settings.json file
 const settingsPath = path.join(__dirname, '../../settings.json');
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
-let chatHistory: ChatEntry[] = [];
-
+// Handler to render the chat page with the current chat history
 export const getChat = (req: Request, res: Response) => {
-  const chatHtml = chatHistory.map(entry => `
+  const chatHistory = req.session.chatHistory || [];
+  const chatHtml = chatHistory.map((entry: ChatEntry) => `
     <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
   `).join('');
 
   res.render('chat', { chatHtml, stylePath: settings.stylePath });
 };
 
+// Handler to process a new question from the user and get a response from Ollama
 export const postAsk = async (req: Request, res: Response) => {
   const question = req.body.question;
-  chatHistory.push({ role: 'user', content: question });
+  req.session.chatHistory = req.session.chatHistory || [];
+  req.session.chatHistory.push({ role: 'user', content: question });
+
+  if (!req.session.sessionId) {
+    req.session.sessionId = uuidv4();
+  }
 
   try {
     const ollama = new Ollama({ host: settings.ollamaHost });
     const response = await ollama.chat({
       model: settings.model,
-      messages: chatHistory,
+      messages: req.session.chatHistory,
     });
     const answer = response.message.content;
-    chatHistory.push({ role: 'assistant', content: answer });
+    req.session.chatHistory.push({ role: 'assistant', content: answer });
 
-    const chatHtml = chatHistory.map(entry => `
+    const chatHtml = req.session.chatHistory.map((entry: ChatEntry) => `
       <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
     `).join('');
 
@@ -41,9 +58,14 @@ export const postAsk = async (req: Request, res: Response) => {
       fs.mkdirSync(logDir);
     }
     const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 14);
-    const logFileName = `${uuidv4()}_${timestamp}.json`;
+    const logFileName = `${req.session.sessionId}_${timestamp}.json`;
     const logFilePath = path.join(logDir, logFileName);
-    fs.writeFileSync(logFilePath, JSON.stringify(chatHistory, null, 2));
+    const logData = {
+      sessionId: req.session.sessionId,
+      model: settings.model,
+      chatHistory: req.session.chatHistory,
+    };
+    fs.writeFileSync(logFilePath, JSON.stringify(logData, null, 2));
 
     res.render('chat', { chatHtml, stylePath: settings.stylePath });
   } catch (error) {
@@ -54,11 +76,14 @@ export const postAsk = async (req: Request, res: Response) => {
   }
 };
 
+// Handler to clear the chat history and session ID
 export const postClear = (req: Request, res: Response) => {
-  chatHistory = [];
+  req.session.chatHistory = [];
+  req.session.sessionId = undefined;
   res.redirect('/');
 };
 
+// Helper function to get model options for the settings page
 const getModelOptions = (ollamaResponse: any, settings: any) => {
   return ollamaResponse.models.map((model: any) => ({
     name: model.name,
@@ -66,6 +91,7 @@ const getModelOptions = (ollamaResponse: any, settings: any) => {
   }));
 };
 
+// Handler to render the settings page with the current settings
 export const getSettings = async (req: Request, res: Response) => {
   const lightSelected = settings.stylePath === '/styles.css' ? 'selected' : '';
   const darkSelected = settings.stylePath === '/styles-dark.css' ? 'selected' : '';
@@ -83,6 +109,7 @@ export const getSettings = async (req: Request, res: Response) => {
   }
 };
 
+// Handler to update the settings based on user input
 export const postSettings = (req: Request, res: Response) => {
   const newStylePath = req.body.style;
   const newModel = req.body.model;

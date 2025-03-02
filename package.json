@@ -12,10 +12,12 @@
         "body-parser": "^1.19.0",
         "ejs": "^3.1.10",
         "express": "^4.17.1",
+        "express-session": "^1.18.1",
         "ollama": "latest",
         "uuid": "^11.1.0"
     },
     "devDependencies": {
+        "@types/express-session": "^1.18.1",
         "typescript": "^4.2.4"
     },
     "author": "Sean Sell sksell@gmail.com",
