@@ -8,6 +8,7 @@ RUN npm install
 COPY tsconfig.json ./
 COPY src ./src
 COPY public ./dist/public
+COPY settings.json ./settings.json
 # Build app
 RUN npx tsc
 # Expose port

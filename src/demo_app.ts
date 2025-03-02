@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import fs from 'fs';
 
 console.log('Starting DON Chat demo app...');
 
@@ -11,6 +12,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 console.log('dirname:', __dirname);
+
+// Read settings from settings.json
+const settingsPath = path.join(__dirname, '../settings.json');
+const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
 const app = express();
 const port = 8080;
@@ -74,9 +79,9 @@ app.post('/ask', async (req: Request, res: Response) => {
   chatHistory.push({ role: 'user', content: question });
 
   try {
-    const ollama = new Ollama({ host: 'http://host.docker.internal:11434' });
+    const ollama = new Ollama({ host: settings.ollamaHost });
     const response = await ollama.chat({
-      model: 'nous-hermes2',
+      model: settings.model,
       messages: chatHistory,
     });
     const answer = response.message.content;

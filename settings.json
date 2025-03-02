@@ -1,0 +1,4 @@
+{
+    "ollamaHost": "http://host.docker.internal:11434",
+    "model": "nous-hermes2"
+}
