@@ -13,6 +13,10 @@ COPY src/views ./dist/views
 COPY settings.json ./settings.json
 # Build app
 RUN npx tsc
+# Clean up
+RUN rm -rf src
+RUN rm ./tsconfig.json
+RUN rm package*.json
 # Expose port
 EXPOSE 8080
 # Run the app
