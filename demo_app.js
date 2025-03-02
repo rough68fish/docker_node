@@ -1,25 +1,48 @@
 import { Ollama } from 'ollama';
 import express from 'express';
 import bodyParser from 'body-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const port = 8080;
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.send(`
-    <form action="/ask" method="post" onsubmit="showLoading()">
-      <label for="question">Question:</label>
-      <input type="text" id="question" name="question">
-      <button type="submit">Ask</button>
-    </form>
-    <div id="loading" style="display:none;">⏳ Loading...</div>
-    <script>
-      function showLoading() {
-        document.getElementById('loading').style.display = 'block';
-      }
-    </script>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>DON Chat</title>
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+      <div class="title-bar">DON Chat</div>
+      <div class="chat-container" id="chat-container">
+        <!-- Chat messages will be appended here -->
+      </div>
+      <div class="input-container">
+        <form action="/ask" method="post" onsubmit="showLoading()">
+          <input type="text" id="question" name="question" placeholder="Type your question here...">
+          <button type="submit">Ask</button>
+        </form>
+      </div>
+      <div id="loading">⏳ Loading...</div>
+      <script>
+        function showLoading() {
+          document.getElementById('loading').style.display = 'block';
+        }
+      </script>
+    </body>
+    </html>
   `);
 });
 
@@ -34,9 +57,34 @@ app.post('/ask', async (req, res) => {
     });
     const answer = response.message.content;
     res.send(`
-      <p>The answer to "${question}" is:</p>
-      <p>${answer}</p>
-      <a href="/">Ask another question</a>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DON Chat</title>
+        <link rel="stylesheet" href="/styles.css">
+      </head>
+      <body>
+        <div class="title-bar">DON Chat</div>
+        <div class="chat-container" id="chat-container">
+          <p><strong>You:</strong> ${question}</p>
+          <p><strong>DON:</strong> ${answer}</p>
+        </div>
+        <div class="input-container">
+          <form action="/ask" method="post" onsubmit="showLoading()">
+            <input type="text" id="question" name="question" placeholder="Type your question here...">
+            <button type="submit">Ask</button>
+          </form>
+        </div>
+        <div id="loading">⏳ Loading...</div>
+        <script>
+          function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+          }
+        </script>
+      </body>
+      </html>
     `);
   } catch (error) {
     res.send(`
