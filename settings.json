@@ -1,4 +1,14 @@
 {
     "ollamaHost": "http://host.docker.internal:11434",
-    "model": "nous-hermes2"
+    "model": "nous-hermes2",
+    "styleOptions": [
+        {
+            "name": "Light",
+            "stylePath": "/styles.css"
+        },
+        {
+            "name": "Dark",
+            "stylePath": "/styles-dark.css"
+        }],
+    "stylePath": "/styles-dark.css"
 }

@@ -42,7 +42,7 @@ app.get('/', (req: Request, res: Response) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>DON Chat</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="${settings.stylePath}">
     </head>
     <body>
       <div class="title-bar">DON Chat</div>
@@ -98,7 +98,7 @@ app.post('/ask', async (req: Request, res: Response) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>DON Chat</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="${settings.stylePath}">
       </head>
       <body>
         <div class="title-bar">DON Chat</div>
