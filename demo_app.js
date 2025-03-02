@@ -9,11 +9,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.send(`
-    <form action="/ask" method="post">
+    <form action="/ask" method="post" onsubmit="showLoading()">
       <label for="question">Question:</label>
       <input type="text" id="question" name="question">
       <button type="submit">Ask</button>
     </form>
+    <div id="loading" style="display:none;">⏳ Loading...</div>
+    <script>
+      function showLoading() {
+        document.getElementById('loading').style.display = 'block';
+      }
+    </script>
   `);
 });
 
