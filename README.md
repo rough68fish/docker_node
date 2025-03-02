@@ -92,14 +92,31 @@ npx tsx
 ### 4. Build the Docker Image
 
 ```sh
-docker build -t docker_node_app .
+docker build -t don_app .
 ```
 
 ### 5. Run the Docker Container
 
 ```sh
-docker run -p 8080:8080 docker_node_app
+docker run -it --rm -p 8080:8080 -vC:\Users\nunya\DON_Logs:/app/ext_logs don_app
 ```
+
+Explanation of the `docker run` command:
+
+- **`docker run`**: This is the command to run a container from a Docker image.
+- **`-it`**: This option combines two flags:
+  - `-i` (interactive): Keeps STDIN open even if not attached.
+  - `-t` (tty): Allocates a pseudo-TTY, which allows you to interact with the container via the terminal.
+- **`--rm`**: Automatically removes the container when it exits. This is useful for temporary containers that you don't want to keep around after they stop.
+- **`-p 8080:8080`**: This option maps a port on the host to a port on the container:
+  - The first `8080` is the port on the host machine.
+  - The second `8080` is the port inside the container.
+  This means that you can access the application running inside the container on port 8080 of the host machine.
+- **`-v C:\Users\nunya\DON_Logs:/app/ext_logs`**: This option mounts a volume from the host to the container:
+  - `C:\Users\nunya\DON_Logs` is the directory on the host machine.
+  - `/app/ext_logs` is the directory inside the container.
+  This means that any files written to `/app/ext_logs` inside the container will be stored in `C:\Users\nunya\DON_Logs` on the host machine, allowing for data persistence even after the container is removed.
+- **`don_app`**: This is the name of the Docker image to run. The container will be created from this image.
 
 ### 6. Access the Application
 
@@ -110,24 +127,31 @@ Open your browser and navigate to `http://localhost:8080`.
 The `Dockerfile` contains the instructions to build the Docker image:
 
 ```Dockerfile
-# Use the official Node.js image as the base image
 FROM node:lts
-# Set the working directory
+# Create app directory
 WORKDIR /app
-# Copy package.json and package-lock.json
+# Install app dependencies
 COPY package*.json ./
-# Install dependencies
 RUN npm install
-# Copy the rest of the application code
+# Bundle app source
 COPY tsconfig.json ./
 COPY src ./src
-COPY public ./public
-# Compile the typescript to js
+COPY public ./dist/public
+# COPY views since they are not compiled by tsc
+COPY src/views ./dist/views
+COPY settings.json ./settings.json
+# Create logs directory
+RUN mkdir -p /app/ext_logs
+# Build app
 RUN npx tsc
-# Expose the port the app runs on
+# Clean up
+RUN rm -rf src
+RUN rm ./tsconfig.json
+RUN rm package*.json
+# Expose port
 EXPOSE 8080
-# Command to run the application
-CMD ["node", "dist/demo_app.js"]
+# Run the app
+CMD ["node", "dist/app.js"]
 ```
 
 ## .dockerignore
