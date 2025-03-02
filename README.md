@@ -101,6 +101,13 @@ npm-debug.log
 
 The main application code is located in the `src` directory. The `demo_app.ts` file contains a simple Node.js server. This server renders a chat interface to an Ollama model running locally.
 
+## References and Aknowledgements 
+[Ollama.js (GitHub)](https://github.com/ollama/ollama-js)
+[Visual Studio Code - Source Control Overview](https://code.visualstudio.com/docs/sourcecontrol/overview)
+[Using Ollama APIs to generate responses and much more (Geshan Manandhar)](https://geshan.com.np/blog/2025/02/ollama-api/)
+[Begginers Guide to use Docker](https://medium.com/@deepakshakya/beginners-guide-to-use-docker-build-run-push-and-pull-4a132c094d75)
+[Nous Hemes2 Model (DOC's Brain)](https://ollama.com/library/nous-hermes2)
+
 ## Contributing
 
 If you would like to contribute to this project, please fork the repository and submit a pull request.
