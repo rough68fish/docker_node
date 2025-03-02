@@ -15,8 +15,8 @@
     <%- chatHtml %>
   </div>
   <div class="input-container">
-    <form action="/ask" method="post" onsubmit="showLoading()">
-      <input type="text" id="question" name="question" placeholder="Type your question here...">
+    <form action="/ask" method="post" onsubmit="showLoading()" class="ask-form">
+      <input type="text" id="question" name="question" placeholder="Type your question here..." class="question-input">
       <button type="submit">Ask</button>
     </form>
     <form action="/clear" method="post" style="margin-left: 10px;">

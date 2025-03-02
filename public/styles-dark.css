@@ -39,8 +39,25 @@ body {
   
   .input-container {
     display: flex;
+    align-items: center;
     padding: 10px;
     border-top: 1px solid #444444;
+  }
+
+  .ask-form {
+    flex: 1;
+    display: flex;
+  }
+  
+  .question-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    margin-right: 10px;
+    background-color: #333;
+    color: #fff;
   }
   
   .input-container input[type="text"] {
