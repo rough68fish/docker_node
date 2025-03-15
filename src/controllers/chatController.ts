@@ -36,8 +36,9 @@ export const getChat = (req: Request, res: Response) => {
 // Handler to process a new question from the user and get a response from Ollama
 export const postAsk = async (req: Request, res: Response) => {
   const question = req.body.question;
+  const timestamp = new Date().toISOString();
   req.session.chatHistory = req.session.chatHistory || [];
-  req.session.chatHistory.push({ role: 'user', content: question });
+  req.session.chatHistory.push({ role: 'user', content: question, timestamp });
 
   if (!req.session.sessionId) {
     req.session.sessionId = uuidv4();
@@ -50,7 +51,8 @@ export const postAsk = async (req: Request, res: Response) => {
       messages: req.session.chatHistory,
     });
     const answer = response.message.content;
-    req.session.chatHistory.push({ role: 'assistant', content: answer });
+    const responseTimestamp = new Date().toISOString();
+    req.session.chatHistory.push({ role: 'assistant', content: answer, timestamp: responseTimestamp });
 
     const chatHtml = req.session.chatHistory.map((entry: ChatEntry) => `
       <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
