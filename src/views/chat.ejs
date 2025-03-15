@@ -33,6 +33,22 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
     window.onload = scrollToBottom;
+
+    function sendFeedback(index, feedback) {
+      fetch('/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ index, feedback })
+      }).then(response => {
+        if (response.ok) {
+          console.log('Feedback sent successfully');
+        } else {
+          console.error('Failed to send feedback');
+        }
+      });
+    }
   </script>
 </body>
 </html>

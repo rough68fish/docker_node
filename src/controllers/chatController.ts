@@ -26,8 +26,17 @@ const defaultSettings: Settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-
 // Handler to render the chat page with the current chat history
 export const getChat = (req: Request, res: Response) => {
   const chatHistory = req.session.chatHistory || [];
-  const chatHtml = chatHistory.map((entry: ChatEntry) => `
-    <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
+  const chatHtml = chatHistory.map((entry: ChatEntry, index: number) => `
+    <p>
+      <strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}
+      ${entry.role === 'assistant' ? `
+        <span class="feedback-icons">
+          <button onclick="sendFeedback(${index}, 'flagged')">&#9873;</button>
+          <button onclick="sendFeedback(${index}, 'thumbsUp')">&#128077;</button>
+          <button onclick="sendFeedback(${index}, 'thumbsDown')">&#128078;</button>
+        </span>
+      ` : ''}
+    </p>
   `).join('');
 
   res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
@@ -53,13 +62,21 @@ export const postAsk = async (req: Request, res: Response) => {
     const answer = response.message.content;
     const responseTimestamp = new Date().toISOString();
     req.session.chatHistory.push({ role: 'assistant', content: answer, timestamp: responseTimestamp });
-
-    const chatHtml = req.session.chatHistory.map((entry: ChatEntry) => `
-      <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
-    `).join('');
-
     // Log chat history to JSON file and save the log file name in the session
     req.session.logFileName = logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory, req.session.logFileName);
+
+    const chatHtml = req.session.chatHistory.map((entry: ChatEntry, index: number) => `
+      <p>
+        <strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}
+        ${entry.role === 'assistant' ? `
+          <span class="feedback-icons">
+            <button onclick="sendFeedback(${index}, 'flagged')">&#9873;</button>
+            <button onclick="sendFeedback(${index}, 'thumbsUp')">&#128077;</button>
+            <button onclick="sendFeedback(${index}, 'thumbsDown')">&#128078;</button>
+          </span>
+        ` : ''}
+      </p>
+    `).join('');
 
     res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
   } catch (error) {
@@ -76,6 +93,23 @@ export const postClear = (req: Request, res: Response) => {
   req.session.sessionId = undefined;
   req.session.logFileName = undefined; // Clear the log file name from the session
   res.redirect('/');
+};
+
+// Handler to process feedback
+export const postFeedback = (req: Request, res: Response) => {
+  // if session ID is not set, generate a new session ID
+  if (!req.session.sessionId) {
+    req.session.sessionId = uuidv4();
+  }
+  const { index, feedback } = req.body;
+  if (req.session.chatHistory && req.session.chatHistory[index]) {
+    req.session.chatHistory[index].feedback = feedback;
+    // Log chat history to JSON file and save the log file name in the session
+    req.session.logFileName = logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory, req.session.logFileName);
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(400);
+  }
 };
 
 // Helper function to get model options for the settings page

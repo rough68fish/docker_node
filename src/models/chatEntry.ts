@@ -1,5 +1,6 @@
 export interface ChatEntry {
     role: 'user' | 'assistant';
     content: string;
-    timestamp: string; // Add timestamp field
+    timestamp: string;
+    feedback?: 'flagged' | 'thumbsUp' | 'thumbsDown'; // Add feedback field
 }

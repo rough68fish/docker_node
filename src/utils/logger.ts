@@ -8,6 +8,11 @@ export const logChatHistory = (sessionId: string, model: string, chatHistory: Ch
     fs.mkdirSync(logDir);
   }
 
+  // Ensure sessionId is a string
+  if (typeof sessionId !== 'string') {
+    sessionId = 'error_session';
+  }
+
   // If logFileName is not provided, create a new one
   if (!logFileName) {
     const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 14);

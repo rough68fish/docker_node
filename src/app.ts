@@ -1,9 +1,9 @@
-// Import necessary modules
 import express from 'express';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import path from 'path';
 import indexRouter from './routes/index';
+import { postFeedback } from './controllers/chatController';
 
 // Create an instance of the Express application
 const app = express();
@@ -11,6 +11,7 @@ const port = 8080;
 
 // Middleware to parse URL-encoded bodies (as sent by HTML forms)
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json()); // Add this line to parse JSON bodies
 
 // Middleware to serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -31,6 +32,9 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Use the index router for handling routes starting with '/'
 app.use('/', indexRouter);
+
+// Add the route to handle feedback
+app.post('/feedback', postFeedback);
 
 // Start the server and listen on the specified port
 app.listen(port, () => {
