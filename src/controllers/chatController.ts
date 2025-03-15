@@ -9,6 +9,7 @@ declare module 'express-session' {
     chatHistory?: ChatEntry[];
     sessionId?: string;
     settings?: Settings;
+    logFileName?: string; // Add logFileName to session data
   }
 }
 
@@ -55,8 +56,8 @@ export const postAsk = async (req: Request, res: Response) => {
       <p><strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}</p>
     `).join('');
 
-    // Log chat history to JSON file
-    logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory);
+    // Log chat history to JSON file and save the log file name in the session
+    req.session.logFileName = logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory, req.session.logFileName);
 
     res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
   } catch (error) {
@@ -71,6 +72,7 @@ export const postAsk = async (req: Request, res: Response) => {
 export const postClear = (req: Request, res: Response) => {
   req.session.chatHistory = [];
   req.session.sessionId = undefined;
+  req.session.logFileName = undefined; // Clear the log file name from the session
   res.redirect('/');
 };
 
