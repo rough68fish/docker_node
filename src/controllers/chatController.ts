@@ -27,16 +27,18 @@ const defaultSettings: Settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-
 export const getChat = (req: Request, res: Response) => {
   const chatHistory = req.session.chatHistory || [];
   const chatHtml = chatHistory.map((entry: ChatEntry, index: number) => `
-    <p>
-      <strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}
+    <div class="chat-entry">
+      <p>
+        <strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}
+      </p>
       ${entry.role === 'assistant' ? `
-        <span class="feedback-icons">
+        <div class="feedback-icons">
           <button onclick="sendFeedback(${index}, 'flagged')">&#9873;</button>
           <button onclick="sendFeedback(${index}, 'thumbsUp')">&#128077;</button>
           <button onclick="sendFeedback(${index}, 'thumbsDown')">&#128078;</button>
-        </span>
+        </div>
       ` : ''}
-    </p>
+    </div>
   `).join('');
 
   res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });

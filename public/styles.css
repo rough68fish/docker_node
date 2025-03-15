@@ -34,10 +34,16 @@ body {
   overflow-y: auto;
 }
 
-.feedback-icons {
-  display: inline-block;
-  margin-left: 10px;
+.chat-entry {
+  margin-bottom: 10px;
 }
+
+.feedback-icons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
 .feedback-icons button {
   background: none;
   border: none;
