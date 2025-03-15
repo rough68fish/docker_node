@@ -64,21 +64,8 @@ export const postAsk = async (req: Request, res: Response) => {
     req.session.chatHistory.push({ role: 'assistant', content: answer, timestamp: responseTimestamp });
     // Log chat history to JSON file and save the log file name in the session
     req.session.logFileName = logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory, req.session.logFileName);
-
-    const chatHtml = req.session.chatHistory.map((entry: ChatEntry, index: number) => `
-      <p>
-        <strong>${entry.role === 'user' ? 'You' : 'DON'}:</strong> ${entry.content}
-        ${entry.role === 'assistant' ? `
-          <span class="feedback-icons">
-            <button onclick="sendFeedback(${index}, 'flagged')">&#9873;</button>
-            <button onclick="sendFeedback(${index}, 'thumbsUp')">&#128077;</button>
-            <button onclick="sendFeedback(${index}, 'thumbsDown')">&#128078;</button>
-          </span>
-        ` : ''}
-      </p>
-    `).join('');
-
-    res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
+    // Render the chat page with the updated chat history
+    getChat(req, res);
   } catch (error) {
     res.send(`
       <p>Error communicating with Ollama: ${error}</p>

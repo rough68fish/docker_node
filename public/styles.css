@@ -43,6 +43,7 @@ body {
   border: none;
   cursor: pointer;
   font-size: 1.2em;
+  color: black; /* Ensure the buttons are black in light mode */
 }
 
 /*
