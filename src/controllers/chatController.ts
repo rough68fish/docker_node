@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { SessionData } from 'express-session';
 import { Settings } from '../models/settings';
+import { logChatHistory } from '../utils/logger';
 
 // Extend the express-session module to include custom properties in the session data
 declare module 'express-session' {
@@ -55,19 +56,7 @@ export const postAsk = async (req: Request, res: Response) => {
     `).join('');
 
     // Log chat history to JSON file
-    const logDir = path.join(__dirname, '../../ext_logs');
-    if (!fs.existsSync(logDir)) {
-      fs.mkdirSync(logDir);
-    }
-    const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 14);
-    const logFileName = `${req.session.sessionId}_${timestamp}.json`;
-    const logFilePath = path.join(logDir, logFileName);
-    const logData = {
-      sessionId: req.session.sessionId,
-      model: req.session.settings?.model || defaultSettings.model,
-      chatHistory: req.session.chatHistory,
-    };
-    fs.writeFileSync(logFilePath, JSON.stringify(logData, null, 2));
+    logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory);
 
     res.render('chat', { chatHtml, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
   } catch (error) {
