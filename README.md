@@ -98,7 +98,13 @@ docker build -t don_app .
 ### 5. Run the Docker Container
 
 ```sh
-docker run -it --rm -p 8080:8080 -vC:\Users\nunya\DON_Logs:/app/ext_logs don_app
+docker run -it --rm --name don_app_container -p 8080:8080 -vC:\Users\nunya\DON_Logs:/app/ext_logs don_app
+```
+
+or
+
+```sh
+docker run -d --rm --name don_app_container -p 8080:8080 -vC:\Users\nunya\DON_Logs:/app/ext_logs don_app
 ```
 
 Explanation of the `docker run` command:
@@ -107,7 +113,9 @@ Explanation of the `docker run` command:
 - **`-it`**: This option combines two flags:
   - `-i` (interactive): Keeps STDIN open even if not attached.
   - `-t` (tty): Allocates a pseudo-TTY, which allows you to interact with the container via the terminal.
+- **`-d`**: Run the container in detached mode (in the background).
 - **`--rm`**: Automatically removes the container when it exits. This is useful for temporary containers that you don't want to keep around after they stop.
+- **`--name don_app_container`**: Assign the name don_app_container to the container.
 - **`-p 8080:8080`**: This option maps a port on the host to a port on the container:
   - The first `8080` is the port on the host machine.
   - The second `8080` is the port inside the container.
@@ -121,6 +129,21 @@ Explanation of the `docker run` command:
 ### 6. Access the Application
 
 Open your browser and navigate to `http://localhost:8080`.
+
+### 7. Cleanup the image and container
+
+```sh
+docker stop don_app_container
+docker rmi don_app
+```
+
+Stop the conainter the --rm in the docker run command should remove the don_app_container automatically eliminating the need to issue the command:
+ 
+```sh
+docker rm don_app_container
+```
+
+Remove the don_app image.
 
 ## Dockerfile
 
