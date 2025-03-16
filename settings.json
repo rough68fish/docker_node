@@ -10,5 +10,6 @@
             "name": "Dark",
             "stylePath": "/styles-dark.css"
         }],
-    "stylePath": "/styles-dark.css"
+    "stylePath": "/styles-dark.css",
+    "flagReasons": ["inaccurate", "hallucination", "biased", "offensive", "other"]
 }

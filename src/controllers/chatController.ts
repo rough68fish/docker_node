@@ -41,7 +41,12 @@ export const getChat = (req: Request, res: Response) => {
     </div>
   `).join('');
 
-  res.render('chat', { chatHtml, chatHistory, stylePath: req.session.settings?.stylePath || defaultSettings.stylePath });
+  res.render('chat', { 
+    chatHtml, 
+    chatHistory, 
+    stylePath: req.session.settings?.stylePath || defaultSettings.stylePath,
+    flagReasons: req.session.settings?.flagReasons || defaultSettings.flagReasons 
+  });
 };
 
 // Handler to process a new question from the user and get a response from Ollama
