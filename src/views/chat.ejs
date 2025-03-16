@@ -5,6 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DON Chat</title>
   <link rel="stylesheet" href="<%= stylePath %>">
+  <style>
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <div class="title-bar">
@@ -24,6 +57,23 @@
     </form>
   </div>
   <div id="loading">⏳ Loading...</div>
+
+  <!-- The Modal -->
+  <div id="flagModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Flagging Reason</h2>
+      <select id="flagReason">
+        <option value="inaccurate">Inaccurate</option>
+        <option value="hallucination">Hallucination</option>
+        <option value="biased">Biased</option>
+        <option value="offensive">Offensive</option>
+        <option value="other">Other</option>
+      </select>
+      <button onclick="submitFlag()">Submit</button>
+    </div>
+  </div>
+
   <script>
     function showLoading() {
       document.getElementById('loading').style.display = 'block';
@@ -35,19 +85,61 @@
     window.onload = scrollToBottom;
 
     function sendFeedback(index, feedback) {
+      if (feedback === 'flagged') {
+        openModal(index);
+      } else {
+        fetch('/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ index, feedback })
+        }).then(response => {
+          if (response.ok) {
+            console.log('Feedback sent successfully');
+          } else {
+            console.error('Failed to send feedback');
+          }
+        });
+      }
+    }
+
+    function openModal(index) {
+      const modal = document.getElementById('flagModal');
+      modal.style.display = 'block';
+      modal.setAttribute('data-index', index);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('flagModal');
+      modal.style.display = 'none';
+    }
+
+    function submitFlag() {
+      const modal = document.getElementById('flagModal');
+      const index = modal.getAttribute('data-index');
+      const reason = document.getElementById('flagReason').value;
       fetch('/feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ index, feedback })
+        body: JSON.stringify({ index, feedback: 'flagged', reason })
       }).then(response => {
         if (response.ok) {
-          console.log('Feedback sent successfully');
+          console.log('Flagging reason sent successfully');
+          closeModal();
         } else {
-          console.error('Failed to send feedback');
+          console.error('Failed to send flagging reason');
         }
       });
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('flagModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
     }
   </script>
 </body>

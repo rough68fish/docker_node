@@ -86,13 +86,12 @@ export const postClear = (req: Request, res: Response) => {
 
 // Handler to process feedback
 export const postFeedback = (req: Request, res: Response) => {
-  // if session ID is not set, generate a new session ID
-  if (!req.session.sessionId) {
-    req.session.sessionId = uuidv4();
-  }
-  const { index, feedback } = req.body;
-  if (req.session.chatHistory && req.session.chatHistory[index]) {
+  const { index, feedback, reason } = req.body;
+  if (req.session.sessionId && req.session.chatHistory && req.session.chatHistory[index]) {
     req.session.chatHistory[index].feedback = feedback;
+    if (feedback === 'flagged' && reason) {
+      req.session.chatHistory[index].flagReason = reason;
+    }
     // Log chat history to JSON file and save the log file name in the session
     req.session.logFileName = logChatHistory(req.session.sessionId, req.session.settings?.model || defaultSettings.model, req.session.chatHistory, req.session.logFileName);
     res.sendStatus(200);
